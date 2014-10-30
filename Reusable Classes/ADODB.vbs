@@ -11,6 +11,7 @@
 '@    No liabilities accepted for your use or updates applied
 '@    No Warranties, implicit or implied apply to use.
 '@
+'@ Version = $Version$
 '
 '			ADODB Manager Class
 '
@@ -39,17 +40,17 @@
 
 set testADO = newADODB
 
-testADO.DBConnect ""
-set rs1 = testADO.executeSQL("Set 1" , "Select * from t")
-set rs2 = testADO.executeSQL("Set 2" , "Update t set f = <value> where f = 'value'")
+REM testADO.DBConnect ""
+REM set rs1 = testADO.executeSQL("Set 1" , "Select * from t")
+REM set rs2 = testADO.executeSQL("Set 2" , "Update t set f = <value> where f = 'value'")
 
-do until rs1.eof
-	'process rs 1
-loop
+REM do until rs1.eof
+	REM 'process rs 1
+REM loop
 
-do until rs2.eof
-	'process rs 2
-loop
+REM do until rs2.eof
+	REM 'process rs 2
+REM loop
 
 '@ End: Test Harness
 
@@ -58,6 +59,8 @@ function newADODB
 end function
 
 class clsADODB
+
+	static Version = $Version$
 
 	private objConnection, objRecordSets
 
@@ -106,6 +109,23 @@ class clsADODB
 	function executeSQL ( RecordSetID , SQLStatement )
 		newRecSet ( RecordSetID )
 		set executeSQL = objRecordSets(RecordSetID).open ( SQLStatement , objConnection )
+	end function
+	
+	property get EOF( recordID )
+		EOF = True
+		if objRecordSets(RecordID).Status = 1 then EOF = objRecordSets(RecordID).EOF
+	end property
+	
+	property get BOF ( recordID )
+		BOF = True
+		if objRecordSets(RecordID).Status = 1 then BOF = objRecordSets(RecordID).BOF
+	end property
+	
+	function moveNext ( recordID )
+		if not objRecordSets(RecordID).EOF and _
+			objRecordSets(RecordID).Status = 1 then _
+				objRecordSets(RecordID).moveNext
+				
 	end function
 	
 end class
